@@ -9,12 +9,16 @@ def read(client, table_dataset, table_name):
     :param table_name: str
     :return: dict
     """
-    query_string = f"""SELECT * FROM {table_dataset}.{table_name}"""
+    try:
+        query_string = f"""SELECT * FROM {table_dataset}.{table_name}"""
 
-    dataframe = (
-        client.query(query_string)
-        .result()
-        .to_dataframe()
-    )
-    data = dataframe.head()
-    return data.to_dict(orient="records")
+        dataframe = (
+            client.query(query_string)
+            .result()
+            .to_dataframe()
+        )
+        data = dataframe.head()
+        return data.to_dict(orient="records")
+    except Exception as e:
+        logging.info(f"error while reading table {e}")
+
