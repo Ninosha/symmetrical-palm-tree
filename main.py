@@ -14,7 +14,7 @@ app = FastAPI()
 client = bigquery.Client()
 project_id = client.project
 
-
+os.environ()
 @app.get("/data")
 def read_data(table_name: str):
     data = read(client, TABLE_DATASET, table_name)
@@ -58,3 +58,18 @@ def read_views(table_name: str):
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=8080)
+
+
+
+# TOPIC_ID
+#
+# crimes
+#
+# TABLE_DATASET
+#
+# bitcoindata-352508.crimes_dataset
+#
+# VIEWS_DATASET
+#
+# bitcoindata-352508.views
+#
