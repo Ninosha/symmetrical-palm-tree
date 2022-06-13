@@ -14,6 +14,7 @@ app = FastAPI()
 client = bigquery.Client()
 project_id = client.project
 
+
 @app.get("/data")
 def read_data(table_name: str):
     data = read(client, TABLE_DATASET, table_name)
