@@ -36,11 +36,14 @@ def create_push(project_id, topic_id, data):
 
 def pull_pubsub(project_id, topic_id):
     subscriber = pubsub_v1.SubscriberClient()
-    topic_path = subscriber.subscription_path(project_id,
+    subscription_path = subscriber.subscription_path(project_id,
                                                      topic_id)
-    result = subscriber.pull(request={
-        "subscription": topic_path,
-        "max_messages": 5,
-    })
-    return result
+
+    def callback(message: pubsub_v1.subscriber.message.Message) -> None:
+        print(f"Received {message}.")
+        message.ack()
+
+    streaming_pull_future = subscriber.subscribe(subscription_path,
+                                                 callback=callback)
+    return streaming_pull_future.result()
 
