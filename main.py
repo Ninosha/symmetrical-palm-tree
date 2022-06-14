@@ -1,4 +1,6 @@
 import os
+import json
+import base64
 import uvicorn
 import logging
 from fastapi import FastAPI
@@ -6,7 +8,7 @@ from modules.read import read
 from google.cloud import bigquery
 from modules.utils import message, create_push, pull_pubsub
 
-PULL_TOPIC_ID = "error_success_messages-sub"
+PULL_TOPIC_ID = "gcf-crime_api_bgq-europe-west1-crimes"
 TOPIC_ID = os.getenv("TOPIC_ID")
 TABLE_DATASET = os.getenv("TABLE_DATASET")
 VIEWS_DATASET = os.getenv("VIEWS_DATASET")
@@ -56,6 +58,13 @@ def delete_row(table_name: str, column_name: str, value: str or int):
     create_push(project_id, TOPIC_ID, data)
     cf_message = pull_pubsub(project_id, PULL_TOPIC_ID)
     logging.info(f"delete rows request send on table {table_name}")
+    data = base64. \
+        b64decode(cf_message) \
+        .decode("utf-8") \
+        .replace("'", '"')
+
+    # converts string dict to dict type
+    cf_message = json.loads(data)
     print(cf_message)
     logging.info(cf_message)
     return "success"
