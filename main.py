@@ -56,7 +56,10 @@ def delete_row(table_name: str, column_name: str, value: str or int):
     create_push(project_id, TOPIC_ID, data)
     cf_message = pull_pubsub(project_id, PULL_TOPIC_ID)
     logging.info(f"delete rows request send on table {table_name}")
-    return {"message": cf_message}
+    print(cf_message)
+    logging.info(cf_message)
+    return "success"
+
 
 
 @app.get("/views")
