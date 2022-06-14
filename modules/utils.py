@@ -27,23 +27,6 @@ def create_push(project_id, topic_id, data):
     logging.info("pub/sub push message sent")
 
 
-# def create_pull(project_id, topic_id):
-#     publisher = pubsub_v1.PublisherClient()
-#     topic_path = publisher.topic_path(project_id, topic_id)
-#     published = publisher.publish(topic_path, data=pub_sub_message)
-#     published.result()
-#     logging.info("pub/sub push message sent")
-
-def pull_pubsub(project_id, topic_id):
-    subscriber = pubsub_v1.SubscriberClient()
-    subscription_path = subscriber.subscription_path(project_id,
-                                                     topic_id)
-
-    def callback(message: pubsub_v1.subscriber.message.Message) -> None:
-        print(f"Received {message}.")
-        message.ack()
-
-    streaming_pull_future = subscriber.subscribe(subscription_path,
-                                                 callback=callback)
-    return streaming_pull_future.result()
-
+def push_and_log(project_id, topic_id, data, result):
+    create_push(project_id, topic_id, data)
+    logging.info(result)

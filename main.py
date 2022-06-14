@@ -1,14 +1,11 @@
 import os
-import json
-import base64
 import uvicorn
 import logging
 from fastapi import FastAPI
 from modules.read import read
 from google.cloud import bigquery
-from modules.utils import message, create_push, pull_pubsub
+from modules.utils import message, create_push, push_and_log
 
-PULL_TOPIC_ID = "gcf-crime_api_bgq-europe-west1-crimes"
 TOPIC_ID = os.getenv("TOPIC_ID")
 TABLE_DATASET = os.getenv("TABLE_DATASET")
 VIEWS_DATASET = os.getenv("VIEWS_DATASET")
@@ -31,10 +28,11 @@ def insert_rows(table_name: str, rows: dict or list):
     req_type = "post"
     data = message({"request_type": req_type, "table_name": table_name,
                     "rows": rows})
-    create_push(project_id, TOPIC_ID, data)
-    cf_message = pull_pubsub(project_id, PULL_TOPIC_ID)
-    logging.info(f"insert rows request send on table {table_name}")
-    return {"message": cf_message}
+
+    result = f"insert rows request send on table {table_name}"
+    push_and_log(project_id, TOPIC_ID, data, result)
+
+    return {"message": result}
 
 
 @app.put("/data")
@@ -43,10 +41,10 @@ def update_row(table_name: str, column_name: str, value: str or int):
     data = message({"request_type": req_type, "table_name": table_name,
                     "column_name": column_name,
                     "value": value})
-    create_push(project_id, TOPIC_ID, data)
-    cf_message = pull_pubsub(project_id, PULL_TOPIC_ID)
-    logging.info(f"update rows request send on table {table_name}")
-    return {"message": cf_message}
+    result = f"update rows request send on table {table_name}"
+    push_and_log(project_id, TOPIC_ID, data, result)
+
+    return {"message": result}
 
 
 @app.delete("/data")
@@ -55,20 +53,9 @@ def delete_row(table_name: str, column_name: str, value: str or int):
     data = message({"request_type": req_type, "table_name": table_name,
                     "column_name": column_name,
                     "value": value})
-    create_push(project_id, TOPIC_ID, data)
-    cf_message = pull_pubsub(project_id, PULL_TOPIC_ID)
-    logging.info(f"delete rows request send on table {table_name}")
-    data = base64. \
-        b64decode(cf_message) \
-        .decode("utf-8") \
-        .replace("'", '"')
-
-    # converts string dict to dict type
-    cf_message = json.loads(data)
-    print(cf_message)
-    logging.info(cf_message)
-    return "success"
-
+    result = f"delete rows request send on table {table_name}"
+    push_and_log(project_id, TOPIC_ID, data, result)
+    return {"message": result}
 
 
 @app.get("/views")
@@ -80,8 +67,6 @@ def read_views(table_name: str):
 
 if __name__ == '__main__':
     uvicorn.run(app, host="0.0.0.0", port=8080)
-
-
 
 # TOPIC_ID
 #
