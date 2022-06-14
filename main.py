@@ -6,7 +6,7 @@ from modules.read import read
 from google.cloud import bigquery
 from modules.utils import message, create_push, pull_pubsub
 
-PULL_TOPIC_ID = "error_success_messages"
+PULL_TOPIC_ID = "error_success_messages-sub"
 TOPIC_ID = os.getenv("TOPIC_ID")
 TABLE_DATASET = os.getenv("TABLE_DATASET")
 VIEWS_DATASET = os.getenv("VIEWS_DATASET")
