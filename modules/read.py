@@ -1,6 +1,5 @@
 import logging
 
-
 def read(client, table_dataset, table_name):
     """
     function reads table fetched from api request
@@ -20,5 +19,6 @@ def read(client, table_dataset, table_name):
         data = dataframe.head()
         return data.to_dict(orient="records")
     except Exception as e:
-        logging.info(f"error while reading table {e}")
-
+        message = {"message": f"error while reading table {e}"}
+        logging.info(message)
+        return message
